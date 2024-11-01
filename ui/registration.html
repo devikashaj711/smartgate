@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Registration</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Employee Registration</h2>
+      <button onclick="window.location.href='index.html'" class="back-button">Back</button>
+    </div>
+    <div class="content">
+      <div class="form-preview">
+        <form id="registrationForm" onsubmit="submitForm(event)">
+          
+          <div class="user-details">
+            <div class="input-box">
+              <span class="details">First Name</span>
+              <input type="text" id="firstName" required />
+            </div>
+            <div class="input-box">
+              <span class="details">Last Name</span>
+              <input type="text" id="lastName" required />
+            </div>
+            <div class="input-box">
+              <span class="details">Employee ID</span>
+              <input type="text" id="employeeId" required />
+            </div>
+            <div class="input-box">
+              <span class="details">Contact Number</span>
+              <input type="text" id="contactNumber" required />
+            </div>
+          </div>
+          <div class="form-submit" style="margin-left: 50px;">
+            <input type="submit" value="Submit" />
+            <div id="messageBox" style="margin-top: 10px; font-size: 14px;"></div>
+          </div>
+        </form>
+        <div class="preview-section">
+          <video id="camera" width="200" height="200" style="display: none;" autoplay></video>
+          <canvas id="canvas" width="200" height="200" style="display: none;"></canvas>
+          <div class="button">
+            <input type="button" value="Capture" onclick="captureImage()" />
+            <input type="button" value="Retake" onclick="retakeImage()" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
