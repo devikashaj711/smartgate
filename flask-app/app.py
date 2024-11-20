@@ -5,6 +5,9 @@ import boto3 # type: ignore
 from flask_cors import CORS # type: ignore
 from io import BytesIO
 
+session = boto3.Session()
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+print(session.get_credentials().get_frozen_credentials())
 
 app = Flask(__name__)
 CORS(app)
@@ -73,6 +76,8 @@ def get_employees():
     response = table.scan()
     employees = response.get('Items', [])
     return jsonify(employees), 200
+
+
 
 
 if __name__ == '__main__':

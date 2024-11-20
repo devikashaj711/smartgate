@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection with Frame Capture</title>
+    <script async src="opencv.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        #output-canvas, #captured-frame {
+            border: 2px solid #000;
+        }
+
+        #output-canvas {
+            width: 640px;
+            height: 480px;
+        }
+
+        #captured-frame {
+            width: 320px;
+            height: 240px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="output-canvas"></canvas>
+        <canvas id="captured-frame"></canvas>
+    </div>
+    <script src="detect.js"></script>
+</body>
+</html>
