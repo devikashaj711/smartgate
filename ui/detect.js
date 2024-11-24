@@ -43,7 +43,7 @@ async function startCamera() {
             // Set canvas dimensions
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            capturedCanvas.width = 320; // Set for captured frame
+            capturedCanvas.width = 320; // Fixed size for captured frame
             capturedCanvas.height = 240;
 
             // Initialize OpenCV Mats
@@ -74,6 +74,70 @@ function manualFrameCapture(video, src) {
     // Read the canvas data into the src matrix
     const imageData = hiddenCtx.getImageData(0, 0, video.videoWidth, video.videoHeight);
     src.data.set(imageData.data);
+}
+
+async function sendToFlask(base64Image) {
+    const resultContainer = document.getElementById('match-result');
+    try {
+        const response = await fetch('http://localhost:4999/search-face', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: base64Image }),
+        });
+
+        const result = await response.json();
+        console.log('Response from Flask:', result);
+
+        // Update the result container based on the response
+        if (result.message === 'Face match found!') {
+            resultContainer.innerHTML = `Hi ${result.details.FirstName}!<br><br> Your attendance has been marked`;
+            resultContainer.style.color = 'green'; // Success color
+        } else if (result.message === 'No matching faces found.') {
+            resultContainer.innerHTML = `Hello! <br><br> We can't find you in our system <br> Please contact Helpdesk`;
+            resultContainer.style.color = 'red'; // Failure color
+        }
+    } catch (error) {
+        console.error('Error sending face to Flask:', error);
+        resultContainer.textContent = 'An error occurred. Please try again.';
+        resultContainer.style.color = 'red'; // Error color
+    }
+}
+
+function drawCorners(ctx, face, cornerLength = 20, lineWidth = 4, color = 'white') {
+    const { x, y, width, height } = face;
+
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = color;
+
+    // Top-left corner
+    ctx.beginPath();
+    ctx.moveTo(x, y + cornerLength);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + cornerLength, y);
+    ctx.stroke();
+
+    // Top-right corner
+    ctx.beginPath();
+    ctx.moveTo(x + width - cornerLength, y);
+    ctx.lineTo(x + width, y);
+    ctx.lineTo(x + width, y + cornerLength);
+    ctx.stroke();
+
+    // Bottom-right corner
+    ctx.beginPath();
+    ctx.moveTo(x + width, y + height - cornerLength);
+    ctx.lineTo(x + width, y + height);
+    ctx.lineTo(x + width - cornerLength, y + height);
+    ctx.stroke();
+
+    // Bottom-left corner
+    ctx.beginPath();
+    ctx.moveTo(x + cornerLength, y + height);
+    ctx.lineTo(x, y + height);
+    ctx.lineTo(x, y + height - cornerLength);
+    ctx.stroke();
 }
 
 function detectFaces(cascadeFileName) {
@@ -112,15 +176,28 @@ function detectFaces(cascadeFileName) {
                     continue;
                 }
 
+                // Draw corners around the detected face
+                drawCorners(ctx, face);
+
                 if (!faceDetectionCooldown) {
-                    // Capture the first detected face
+                    // Add padding around the detected face
+                    const padding = 0.2; // 20% padding
+                    const padX = face.width * padding;
+                    const padY = face.height * padding;
+
+                    const cropX = Math.max(0, face.x - padX);
+                    const cropY = Math.max(0, face.y - padY);
+                    const cropWidth = Math.min(video.videoWidth - cropX, face.width + 2 * padX);
+                    const cropHeight = Math.min(video.videoHeight - cropY, face.height + 2 * padY);
+
+                    // Capture the detected face with padding
                     capturedCtx.clearRect(0, 0, capturedCanvas.width, capturedCanvas.height);
                     capturedCtx.drawImage(
                         video,
-                        face.x,
-                        face.y,
-                        face.width,
-                        face.height,
+                        cropX,
+                        cropY,
+                        cropWidth,
+                        cropHeight,
                         0,
                         0,
                         capturedCanvas.width,
@@ -128,6 +205,12 @@ function detectFaces(cascadeFileName) {
                     );
 
                     console.log(`Face detected at (${face.x}, ${face.y}), size: ${face.width}x${face.height}`);
+
+                    // Get the captured frame as a Base64 string
+                    const base64Image = capturedCanvas.toDataURL('image/jpeg');
+
+                    // Send the Base64 image to Flask
+                    sendToFlask(base64Image);
 
                     // Apply a 10-second cooldown
                     faceDetectionCooldown = true;

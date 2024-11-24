@@ -214,4 +214,61 @@
   background-color: #f2f2f2;
 }
 
+/* entry gate */
+.container1 {
+  max-width: 1200px;
+  width: 100%;
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.preview-section1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.preview-section canvas {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.video-container canvas {
+  width: 100%;
+  max-width: 640px;
+  height: 480px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.capture-container canvas {
+  width: 100%;
+  max-width: 320px;
+  height: 240px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+/* Responsive adjustments */
+@media (max-width: 584px) {
+  .container {
+      max-width: 100%;
+  }
+
+  .form-preview {
+      flex-direction: column;
+      align-items: center;
+  }
+}
   
