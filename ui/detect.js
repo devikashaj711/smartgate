@@ -8,6 +8,7 @@ let src = null;
 let gray = null;
 let faceDetectionCooldown = false; // Prevent multiple detections within cooldown period
 
+/* Face detection algorithm */
 async function loadCascade() {
     const haarCascadeUrl =
         'https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml';
@@ -32,6 +33,7 @@ async function loadCascade() {
     }
 }
 
+/* To start camera for capturing face */
 async function startCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -62,6 +64,7 @@ async function startCamera() {
     }
 }
 
+/* Capture photo for registration */
 function manualFrameCapture(video, src) {
     const hiddenCanvas = document.createElement('canvas');
     hiddenCanvas.width = video.videoWidth;
@@ -76,6 +79,7 @@ function manualFrameCapture(video, src) {
     src.data.set(imageData.data);
 }
 
+/* For sending captured image to backened */
 async function sendToFlask(base64Image) {
     const resultContainer = document.getElementById('match-result');
     try {
@@ -97,6 +101,9 @@ async function sendToFlask(base64Image) {
         } else if (result.message === 'No matching faces found.') {
             resultContainer.innerHTML = `Hello! <br><br> We can't find you in our system <br> Please contact Helpdesk`;
             resultContainer.style.color = 'red'; // Failure color
+        } else if (result.message === 'Multiple faces detected') {
+            resultContainer.innerHTML = `Warning! <br><br> Multiple faces detected. <br> Please ensure only one face is visible.`;
+            resultContainer.style.color = 'orange'; // Warning message
         }
     } catch (error) {
         console.error('Error sending face to Flask:', error);
@@ -105,6 +112,7 @@ async function sendToFlask(base64Image) {
     }
 }
 
+/* Draw corners for face detection */
 function drawCorners(ctx, face, cornerLength = 20, lineWidth = 4, color = 'white') {
     const { x, y, width, height } = face;
 
@@ -140,6 +148,7 @@ function drawCorners(ctx, face, cornerLength = 20, lineWidth = 4, color = 'white
     ctx.stroke();
 }
 
+/* For detecting faces in real time */
 function detectFaces(cascadeFileName) {
     const faceCascade = new cv.CascadeClassifier();
     faceCascade.load(cascadeFileName);

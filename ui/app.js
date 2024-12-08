@@ -41,7 +41,7 @@ function captureImage() {
     }
 }
 
-/* To stop camrera access */
+/* To stop camera access */
 function stopCamera() {
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -59,24 +59,30 @@ function retakeImage() {
 function submitForm(event) {
     event.preventDefault();
 
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
-    const employeeId = document.getElementById('employeeId').value;
-    const contactNumber = document.getElementById('contactNumber').value;
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const employeeId = document.getElementById('employeeId').value.trim();
+    const contactNumber = document.getElementById('contactNumber').value.trim();
 
-    const imageData = canvas.toDataURL('image/png');
+    // Validate form fields
+    if (!firstName || !lastName || !employeeId || !contactNumber) {
+        alert("Please fill in all the fields before submitting.");
+        return;
+    }
+
+    const imageData = canvas.toDataURL('image/png'); // Convert canvas to Base64 string
 
     const formData = {
         firstName: firstName,
         lastName: lastName,
         employeeId: employeeId,
         contactNumber: contactNumber,
-        image: imageData // Image as Base64 string
+        image: imageData
     };
 
     const messageBox = document.getElementById('messageBox');
-    messageBox.textContent = ''; 
-    messageBox.style.color = ''; 
+    messageBox.textContent = '';
+    messageBox.style.color = '';
 
     fetch('http://localhost:4999/submit', {
         method: 'POST',
@@ -85,30 +91,27 @@ function submitForm(event) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => {
-        if (response.status === 200) {
-            return response.json().then(data => {
-                console.log('Success:', data);
-                messageBox.textContent = 'Form submitted successfully!';
-                messageBox.style.color = 'green';
-                stopCamera(); 
-            });
-        } else if (response.status === 400) {
-            return response.json().then(data => {
-                console.error('Error:', data);
-                messageBox.innerHTML = data.errorrror || 'Unable to submit the form. <br> Employee ID already exists.';
-                messageBox.style.color = 'red';
-            });
-        } else {
-            throw new Error('Unexpected response status: ' + response.status);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        messageBox.textContent = 'There was an error submitting the form.';
-        messageBox.style.color = 'red';
-    });
-    stopCamera();
+        .then(response => {
+            if (response.status === 200) {
+                return response.json().then(data => {
+                    console.log('Success:', data);
+                    messageBox.textContent = 'Form submitted successfully!';
+                    messageBox.style.color = 'green';
+                    stopCamera();
+                });
+            } else if (response.status === 400) {
+                return response.json().then(data => {
+                    console.error('Error:', data);
+                    messageBox.innerHTML = data.error || 'Unable to submit the form. <br> Employee ID or face already exists.';
+                    messageBox.style.color = 'red';
+                });
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageBox.textContent = 'There was an error submitting the form.';
+            messageBox.style.color = 'red';
+        });
 }
-
-
