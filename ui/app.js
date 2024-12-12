@@ -84,7 +84,7 @@ function submitForm(event) {
     messageBox.textContent = '';
     messageBox.style.color = '';
 
-    fetch('http://localhost:4999/submit', {
+    fetch('http://54.86.150.4:4999/submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

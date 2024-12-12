@@ -83,7 +83,7 @@ function manualFrameCapture(video, src) {
 async function sendToFlask(base64Image) {
     const resultContainer = document.getElementById('match-result');
     try {
-        const response = await fetch('http://localhost:4999/search-face', {
+        const response = await fetch('http://54.86.150.4:4999/search-face', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

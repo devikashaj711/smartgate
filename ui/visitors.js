@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', loadVisitorData);
 /* To load visitor data */
 function loadVisitorData() {
 
-    fetch('http://localhost:4999/visitors')  
+    fetch('http://54.86.150.4:4999/visitors')  
         .then(response => {
             if (response.status === 200) {
                 return response.json();

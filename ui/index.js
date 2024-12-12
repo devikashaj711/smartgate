@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', loadEmployeeData);
 /* To load employee data */
 function loadEmployeeData() {
 
-    fetch('http://localhost:4999/employees')  
+    fetch('http://54.86.150.4:4999/employees')  
         .then(response => {
             if (response.status === 200) {
                 return response.json();
